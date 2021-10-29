@@ -14,10 +14,10 @@
       <section>
         <h1 class="title">Lista de Usuários</h1>
         <ul>
-          <li v-for="user in users" :key="user.id">
+          <li v-for="user in users" :key="user._id">
             <p>{{ user.name }}</p>
             <small>{{ user.email }}</small>
-            <a class="destroy" @click="destroyUser(user.id)"></a>
+            <a class="destroy" @click="destroyUser(user._id)"></a>
           </li>
         </ul>
       </section>
@@ -30,7 +30,7 @@ import { defineComponent, warn } from "vue";
 import axios from '@/utils/axios'
 
 interface User {
-  id: string
+  _id: string
   name: string
   email: string
 }
@@ -67,12 +67,12 @@ export default defineComponent({
         console.warn(error);
       }
     },
-    async destroyUser(id: User['id']) {
+    async destroyUser(id: User['_id']) {
+      console.log(id);
       try {
         await axios.delete(`/users/${id}`)
-        console.log(id);
         
-        const userIndex = this.users.findIndex((user) => user.id === id) 
+        const userIndex = this.users.findIndex((user) => user._id === id) 
         this.users.splice(userIndex, 1)
       } catch (error) {
         console.warn(error);

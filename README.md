@@ -3,7 +3,7 @@
  </div>
  
  - Utilizei o axios para consumir a API que criei
- - [Rest API](https://github.com/Vitaopb/api-rest)
+ - Link do repositório: [Rest API](https://github.com/Vitaopb/api-rest)
  - Os dados são salvos no banco de dados MongoDB
  - Utilizei o Vuejs com Typescript
   

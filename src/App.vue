@@ -1,46 +1,122 @@
 <template>
-  <Header />
+  <div class="users">
+    <div class="container">
+      <h1 class="titulo">Cadatro de Usuários</h1>
+      <section>
+        <h3 class="title">Novo Usuário</h3>
+        <form @submit.prevent="createUser" @keyup.prevent.enter="createUser">
+          <input type="text" placeholder="Nome" v-model="form.name">
+          <input type="text" placeholder="Email" v-model="form.email">
+          <button type="submit">Adicionar</button>
+        </form>
+      </section>
+
+      <section>
+        <h1 class="title">Lista de Usuários</h1>
+        <ul>
+          <li v-for="user in users" :key="user.id">
+            <p>{{ user.name }}</p>
+            <small>{{ user.email }}</small>
+            <a class="destroy" @click="destroyUser(user.id)"></a>
+          </li>
+        </ul>
+      </section>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import Header from "@/components/Header.vue"
+import { defineComponent, warn } from "vue";
+import axios from '@/utils/axios'
+
+interface User {
+  id: string
+  name: string
+  email: string
+}
+
 export default defineComponent({
- components: {
-   Header
- }
+  data() {
+    return {
+      users: [] as User[],
+      form: {
+        name: '',
+        email: ''
+      }
+    }
+  },
+  created() {
+    this.fetchUsers()
+  },
+  methods: {
+    async fetchUsers() {
+      try {
+        const { data } = await axios.get('/users');
+        this.users = data;
+      } catch (error) {
+        console.warn(error);
+      }
+    },
+    async createUser() {
+      try {
+        const { data } = await axios.post('/users', this.form);
+        this.users.push(data);
+        this.form.name = '';
+        this.form.email = '';
+      } catch (error) {
+        console.warn(error);
+      }
+    },
+    async destroyUser(id: User['id']) {
+      try {
+        await axios.delete(`/users/${id}`)
+        console.log(id);
+        
+        const userIndex = this.users.findIndex((user) => user.id === id) 
+        this.users.splice(userIndex, 1)
+      } catch (error) {
+        console.warn(error);
+      }
+    }
+  }
 });
 </script>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
-.container {
+/* .container {
   margin: 4rem auto;
   max-width: 500px;
   width: 90%;
   display: grid;
   grid-gap: 2.5rem;
+} */
+
+.titulo {
+  font-size: 2.5rem;
+  text-align: center;
+  font-weight: 700;
 }
 
 .title {
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 400;
   margin: 0.7rem 0;
 }
 
-form {
+/* form {
   display: grid;
   grid-gap: 1rem;
-}
+} */
 
-input {
+/* input {
   background: transparent;
   border: 1px solid #999fc6;
-  border-radius: 1rem;
-  padding: 0.6rem;
+  border-radius: none;
+  padding: 0.8rem;
   outline: none;
   color: #e1e8ef;
-}
+} */
 
 input::placeholder {
   color: #999fc6;
@@ -135,13 +211,14 @@ li {
 form {
   display: grid;
   grid-gap: 1rem;
+  
 }
 
 input {
   background: transparent;
   border: 1px solid #999fc6;
-  border-radius: 1rem;
-  padding: 0.6rem;
+  border-radius: 1.5rem;
+  padding: 0.9rem;
   outline: none;
   color: #e1e8ef;
 }
@@ -151,8 +228,8 @@ input::placeholder {
 }
 
 button {
-  background-color: #2d6cea;
-  color: #e1e8ef;
+  background-color: #222;
+  color: #e1e8ef  ;
   border: none;
   border-radius: 1rem;
   padding: 0.6rem 1.5rem;
@@ -179,7 +256,7 @@ ul {
 }
 
 li {
-  background-color: #2b3a4e;
+  background-color: #333;
   padding: 1.2rem 1rem;
   border-radius: 1rem;
   position: relative;
